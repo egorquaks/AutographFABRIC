@@ -1,13 +1,12 @@
 package by.quaks.autograph;
 
 import by.quaks.autograph.config.ConfigManager;
-import lombok.Getter;
-import lombok.Setter;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 
-import java.io.File;
+
 import java.io.IOException;
 
 public class Autograph implements ModInitializer {

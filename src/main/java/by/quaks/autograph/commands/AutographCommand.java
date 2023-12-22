@@ -12,7 +12,6 @@ import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -50,15 +49,17 @@ public class AutographCommand {
                 if(itemStack.isDamageable()){
                     addLore(ctx);
                 }else{
-                    adventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString("nonValuableItem")));
+                    sendMessage(player,"nonValuableItem");
                 }
             }else{
-                adventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString("emptyHandMessage")));
+                sendMessage(player,"emptyHandMessage");
             }
         }
         return 1;
     }
-
+    private static void sendMessage(PlayerEntity player,String configMessage){
+        adventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
+    }
     public static void addLore(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (context.getSource().getEntity().isPlayer()) {
             if (context.getSource().getPlayer().getMainHandStack().isEmpty()) return;
@@ -92,7 +93,7 @@ public class AutographCommand {
                 lore.add(NbtString.of(autographJson));
                 itemNbt.put("Lore", lore);
             }else{
-                adventure().player(context.getSource().getPlayer().getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString("itemContainsMaxAutographsBy")));
+                sendMessage(context.getSource().getPlayer(),"itemContainsMaxAutographsBy");
             }
         }
     }
