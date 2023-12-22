@@ -1,0 +1,4 @@
+autograph: "<b><gradient:red:yellow>Подпись {player-name}</b>"
+itemContainsMaxAutographsBy: "<color:red>Ты не можешь оставить подпись дважды</color:red>"
+emptyHandMessage: "<color:red>Возьми предмет в руку чтобы его подписать</color:red>"
+nonValuableItem: "<color:red>Ты не можешь оставить подпись на данном типе предмета</color:red>"

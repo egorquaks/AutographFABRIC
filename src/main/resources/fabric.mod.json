@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "autograph",
+  "version": "${version}",
+  "name": "Autograph",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/egorl/Autograph1201"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/autograph/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "by.quaks.autograph.server.AutographServer"
+    ],
+    "client": [
+      "by.quaks.autograph.client.AutographClient"
+    ],
+    "main": [
+      "by.quaks.autograph.Autograph"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
