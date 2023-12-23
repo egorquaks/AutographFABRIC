@@ -23,15 +23,18 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import static by.quaks.autograph.Autograph.serverAdventure;
-import static by.quaks.autograph.Autograph.clientAdventure;
+import static by.quaks.autograph.client.AutographClient.clientAdventure;
+import static by.quaks.autograph.server.AutographServer.serverAdventure;
 import static by.quaks.autograph.Autograph.configReader;
 
 public class AutographCommand {
+
+    private static boolean dedicated;
     public void register() {
         System.out.println("Registration Autograph");
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             register(dispatcher);
+            dedicated = environment.dedicated;
         });
     }
 
@@ -40,15 +43,15 @@ public class AutographCommand {
                 .executes(this::run));
     }
 
-    private int run(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        final ServerCommandSource source = ctx.getSource();
+    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        final ServerCommandSource source = context.getSource();
         final PlayerEntity player = source.getPlayer();
         if (player != null) {
             ItemStack itemStack = player.getMainHandStack();
             if (!itemStack.isEmpty()) {
                 //adventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString("autograph").replaceAll("\\{player-name\\}", player.getName().getString())));
                 if(itemStack.isDamageable()){
-                    addLore(ctx);
+                    addLore(context);
                 }else{
                     sendMessage(player,"nonValuableItem");
                 }
@@ -59,12 +62,10 @@ public class AutographCommand {
         return 1;
     }
     private static void sendMessage(PlayerEntity player,String configMessage){
-        if(clientAdventure()!=null){
-            clientAdventure().audience().sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
-            return;
-        }
-        if(serverAdventure()!=null){
+        if(dedicated){
             serverAdventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
+        }else{
+            clientAdventure().audience().sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
         }
     }
     public static void addLore(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
