@@ -16,10 +16,7 @@ public class AutographServer implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         new AutographCommand().register();
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-            System.out.println("SERVER_STARTING"); // TODO: 23.11.2023 FOR REMOVAL
-            serverAdventure = FabricServerAudiences.of(server);
-        });
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> serverAdventure = FabricServerAudiences.of(server));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> serverAdventure = null);
     }
 }

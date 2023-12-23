@@ -1,5 +1,6 @@
 package by.quaks.autograph.config;
 
+import by.quaks.autograph.Autograph;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -19,9 +20,9 @@ public class ConfigManager {
             configData = yaml.load(fis);
             fis.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Файл config.yml не найден.");
+            Autograph.LOGGER.error("Файл config.yml не найден.");
         } catch (Exception e) {
-            System.out.println("Ошибка чтения файла: " + e.getMessage());
+            Autograph.LOGGER.error("Ошибка чтения файла: " + e.getMessage());
         }
     }
     public static void createConfigFile() throws IOException {

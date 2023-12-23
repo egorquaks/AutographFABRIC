@@ -18,12 +18,8 @@ public class AutographClient implements ClientModInitializer {
     }
     @Override
     public void onInitializeClient() {
-        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
-            System.out.println("CLIENT_STARTED");
-            clientAdventure = FabricClientAudiences.of();
-        });
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> clientAdventure = FabricClientAudiences.of());
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> clientAdventure = null);
         new AutographCommand().register();
-        System.out.println("COMMAND REGISTRATION CLIENT");
     }
 }

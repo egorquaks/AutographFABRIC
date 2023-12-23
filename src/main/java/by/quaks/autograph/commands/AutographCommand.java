@@ -1,10 +1,8 @@
 package by.quaks.autograph.commands;
 
 
-import by.quaks.autograph.config.ConfigManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -30,8 +28,8 @@ import static by.quaks.autograph.Autograph.configReader;
 public class AutographCommand {
 
     private static boolean dedicated;
+
     public void register() {
-        System.out.println("Registration Autograph");
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             register(dispatcher);
             dedicated = environment.dedicated;
@@ -40,70 +38,94 @@ public class AutographCommand {
 
     private void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("autograph")
-                .executes(this::run));
+                .executes(this::dispatch));
     }
 
-    private int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+
+    private int dispatch(CommandContext<ServerCommandSource> context) {
         final ServerCommandSource source = context.getSource();
         final PlayerEntity player = source.getPlayer();
         if (player != null) {
             ItemStack itemStack = player.getMainHandStack();
             if (!itemStack.isEmpty()) {
-                //adventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString("autograph").replaceAll("\\{player-name\\}", player.getName().getString())));
-                if(itemStack.isDamageable()){
-                    addLore(context);
-                }else{
-                    sendMessage(player,"nonValuableItem");
+                if (itemStack.isDamageable()) {
+                    if (!hasAutographBy(itemStack, player)) {
+                        addLore(itemStack, genJsonAutograph(player));
+                    } else {
+                        sendMessage(context.getSource().getPlayer(), "itemContainsMaxAutographsBy");
+                    }
+                } else {
+                    sendMessage(player, "nonValuableItem");
                 }
-            }else{
-                sendMessage(player,"emptyHandMessage");
+            } else {
+                sendMessage(player, "emptyHandMessage");
             }
         }
         return 1;
     }
-    private static void sendMessage(PlayerEntity player,String configMessage){
-        if(dedicated){
+
+    private static void sendMessage(PlayerEntity player, String configMessage) {
+        if (dedicated) {
             serverAdventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
-        }else{
+        } else {
             clientAdventure().audience().sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
         }
     }
-    public static void addLore(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        if (context.getSource().getEntity().isPlayer()) {
-            if (context.getSource().getPlayer().getMainHandStack().isEmpty()) return;
-            NbtCompound itemNbt = context.getSource().getPlayer().getMainHandStack().getOrCreateSubNbt("display");
-            NbtList lore = new NbtList();
-            ConfigManager configReader = new ConfigManager();
-            if (itemNbt.contains("Lore")) {
-                lore = itemNbt.getList("Lore", NbtElement.STRING_TYPE);
-            }else{
-                String autographSetting = configReader.getString("autograph");
-                Component autographComp = MiniMessage.miniMessage().deserialize(autographSetting.replaceAll("\\{player-name\\}", context.getSource().getPlayer().getName().getString()));
-                String autographJson = JSONComponentSerializer.json().serialize(autographComp).replaceFirst("\\{", "{\"italic\":false,");
-                lore.add(NbtString.of(autographJson));
-                itemNbt.put("Lore", lore);
-                return;
-            }
-            String loreJson = lore.asString();
-            List<String> loreList = new ArrayList<>();
-            JSONArray jsonArray = new JSONArray(loreJson);
-            for (int i1 = 0; i1 < jsonArray.length(); i1++){
-                String json = jsonArray.getString(i1);
-                Component component = JSONComponentSerializer.json().deserialize(json);
-                String plainLoreEntry = PlainTextComponentSerializer.plainText().serialize(component);
-                loreList.add(plainLoreEntry);
-            }
-            String autographSetting = configReader.getString("autograph");
-            Component autographComp = MiniMessage.miniMessage().deserialize(autographSetting.replaceAll("\\{player-name\\}", context.getSource().getPlayer().getName().getString()));
-            String plainAutograph = PlainTextComponentSerializer.plainText().serialize(autographComp);
-            if(!loreList.contains(plainAutograph)){
-                String autographJson = JSONComponentSerializer.json().serialize(autographComp).replaceFirst("\\{", "{\"italic\":false,");
-                lore.add(NbtString.of(autographJson));
-                itemNbt.put("Lore", lore);
-            }else{
-                sendMessage(context.getSource().getPlayer(),"itemContainsMaxAutographsBy");
-            }
-        }
+
+    private static String genJsonAutograph(PlayerEntity player) {
+        String autographSetting = configReader.getString("autograph");
+        Component autographComp = MiniMessage.miniMessage().deserialize(autographSetting.replaceAll("\\{player-name\\}", player.getName().getString()));
+        return JSONComponentSerializer.json().serialize(autographComp).replaceFirst("\\{", "{\"italic\":false,");
     }
 
+    private static boolean hasAutographBy(ItemStack itemStack, PlayerEntity player) {
+        List<String> lore = getPlainList(getLore(itemStack));
+        for (String entry : lore) {
+            if (entry.toLowerCase().contains(player.getName().getString().toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void addLore(ItemStack itemStack, String json) {
+        NbtCompound itemNbt = itemStack.getOrCreateSubNbt("display");
+        NbtList lore = new NbtList();
+        if (itemNbt.contains("Lore")) {
+            lore = itemNbt.getList("Lore", NbtElement.STRING_TYPE);
+        }
+        lore.add(NbtString.of(json));
+        itemNbt.put("Lore", lore);
+    }
+
+    private static JSONArray getLore(ItemStack itemStack) {
+        NbtCompound itemNbt = itemStack.getOrCreateSubNbt("display");
+        NbtList lore = new NbtList();
+        if (itemNbt.contains("Lore")) {
+            lore = itemNbt.getList("Lore", NbtElement.STRING_TYPE);
+        }
+        String loreJson = lore.asString();
+        return new JSONArray(loreJson);
+    }
+
+    private static List<String> getList(JSONArray jsonArray) {
+        List<String> loreList = new ArrayList<>();
+        for (int i1 = 0; i1 < jsonArray.length(); i1++) {
+            loreList.add(jsonArray.getString(i1));
+        }
+        return loreList;
+    }
+
+    private static List<String> getPlainList(JSONArray jsonArray) {
+        List<String> loreList = new ArrayList<>();
+        JSONComponentSerializer jsonSerializer = JSONComponentSerializer.json();
+        PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            String json = jsonArray.getString(i);
+            Component component = jsonSerializer.deserialize(json);
+            String plainLoreEntry = plainTextSerializer.serialize(component);
+            loreList.add(plainLoreEntry);
+        }
+        return loreList;
+    }
 }
