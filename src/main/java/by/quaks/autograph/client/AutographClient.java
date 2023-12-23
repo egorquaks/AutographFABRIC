@@ -1,5 +1,6 @@
 package by.quaks.autograph.client;
 
+import by.quaks.autograph.commands.AutographCommand;
 import net.fabricmc.api.ClientModInitializer;
 
 public class AutographClient implements ClientModInitializer {
@@ -8,6 +9,7 @@ public class AutographClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
-
+        new AutographCommand().register();
+        System.out.println("COMMAND REGISTRATION CLIENT");
     }
 }

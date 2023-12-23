@@ -23,7 +23,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import static by.quaks.autograph.Autograph.adventure;
+import static by.quaks.autograph.Autograph.serverAdventure;
+import static by.quaks.autograph.Autograph.clientAdventure;
 import static by.quaks.autograph.Autograph.configReader;
 
 public class AutographCommand {
@@ -58,7 +59,13 @@ public class AutographCommand {
         return 1;
     }
     private static void sendMessage(PlayerEntity player,String configMessage){
-        adventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
+        if(clientAdventure()!=null){
+            clientAdventure().audience().sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
+            return;
+        }
+        if(serverAdventure()!=null){
+            serverAdventure().player(player.getUuid()).sendMessage(MiniMessage.miniMessage().deserialize(configReader.getString(configMessage)));
+        }
     }
     public static void addLore(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         if (context.getSource().getEntity().isPlayer()) {

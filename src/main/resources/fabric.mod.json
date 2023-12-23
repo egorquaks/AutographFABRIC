@@ -10,7 +10,7 @@
   },
   "license": "All-Rights-Reserved",
   "icon": "assets/autograph/icon.png",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "server": [
       "by.quaks.autograph.server.AutographServer"
