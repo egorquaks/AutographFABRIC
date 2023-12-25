@@ -10,6 +10,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -47,6 +48,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
         }
         ci.cancel();
     }
+    @Unique
     private static Map <Inventory, ItemStack> itemStackMap = new HashMap<>();
     @Redirect(method = "onTakeOutput", at = @At(
             value = "INVOKE",
