@@ -50,17 +50,17 @@ public class AutographCommand {
         if (player != null) {
             ItemStack itemStack = player.getMainHandStack();
             if (!itemStack.isEmpty()) {
-                if (itemStack.isDamageable()) {
+                if (itemStack.isDamageable()||itemStack.isOf(Items.ANVIL)) { // TODO: 25.12.2023
                     if (!hasAutographBy(itemStack, player)) {
                         addLore(itemStack, genJsonAutograph(player));
                     } else {
-                        sendMessage(context.getSource().getPlayer(), "itemContainsMaxAutographsBy");
+                        sendMessage(context.getSource().getPlayer(), "general.itemContainsMaxAutographsBy");
                     }
                 } else {
-                    sendMessage(player, "nonValuableItem");
+                    sendMessage(player, "general.itemNotTheList");
                 }
             } else {
-                sendMessage(player, "emptyHandMessage");
+                sendMessage(player, "general.emptyHandMessage");
             }
         }
         return 1;
@@ -75,7 +75,7 @@ public class AutographCommand {
     }
 
     public static String genJsonAutograph(PlayerEntity player) {
-        String autographSetting = configReader.getString("autograph");
+        String autographSetting = configReader.getString("general.autograph");
         Component autographComp = MiniMessage.miniMessage().deserialize(autographSetting.replaceAll("\\{player-name\\}", player.getName().getString()));
         return JSONComponentSerializer.json().serialize(autographComp).replaceFirst("\\{", "{\"italic\":false,");
     }
