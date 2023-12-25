@@ -1,5 +1,6 @@
 package by.quaks.autograph.mixin;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -44,37 +45,38 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
             addLore(finalItem, genJsonAutograph(player));
             if (itemStack.isDamageable() && itemStack3.isOf(Items.PAPER)) {
                 this.output.setStack(0, finalItem);
+                ci.cancel();
             }
         }
-        ci.cancel();
     }
     @Unique
     private static Map <Inventory, ItemStack> itemStackMap = new HashMap<>();
     @Redirect(method = "onTakeOutput", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V",
-            ordinal = 3
-    ))
+            ordinal = 3)
+    )
     public void setStack(Inventory instance, int i, ItemStack itemStack){
         if(itemStackMap.containsKey(instance)){
-            if (itemStackMap.get(instance).isDamageable() && this.input.getStack(1).isOf(Items.PAPER)) {
-                this.input.getStack(1).decrement(1);
+            if (itemStackMap.get(instance).isDamageable() && instance.getStack(1).isOf(Items.PAPER)) {
+                instance.getStack(1).decrement(1);
             } else {
-                this.input.setStack(1, ItemStack.EMPTY);
+                instance.setStack(1, ItemStack.EMPTY);
             }
             itemStackMap.remove(instance);
         }else{
-            this.input.setStack(1, ItemStack.EMPTY);
+            instance.setStack(1, ItemStack.EMPTY);
         }
     }
-    @Redirect(method = "onTakeOutput", at = @At(
+    @Inject(method = "onTakeOutput", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/inventory/Inventory;setStack(ILnet/minecraft/item/ItemStack;)V",
-            ordinal = 0
-    ))
-    public void getLast(Inventory instance, int i, ItemStack itemStack){
-            itemStackMap.put(instance,this.input.getStack(0).copy());
-            this.input.setStack(0, ItemStack.EMPTY);
+            ordinal = 0,
+            shift = At.Shift.BEFORE),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
+    public void getLast(PlayerEntity player, ItemStack stack, CallbackInfo ci){
+            itemStackMap.put(this.input,this.input.getStack(0).copy());
     }
 
 }
