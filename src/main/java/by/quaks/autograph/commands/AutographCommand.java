@@ -10,6 +10,7 @@ import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -20,6 +21,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static by.quaks.autograph.client.AutographClient.clientAdventure;
 import static by.quaks.autograph.server.AutographServer.serverAdventure;
@@ -86,6 +88,15 @@ public class AutographCommand {
             }
         }
         return false;
+    }
+    public static boolean isAutographed(ItemStack itemStack){
+        List<String> lore = getPlainList(getLore(itemStack));
+        String autographFormRaw = configReader.getString("general.autograph");
+        Component component = MiniMessage.miniMessage().deserialize(autographFormRaw);
+        String autographForm = PlainTextComponentSerializer.plainText().serialize(component);
+        String autographPattern = autographForm.replaceAll("\\{player-name}","(.*?)");
+        Pattern pattern = Pattern.compile(autographPattern);
+        return lore.stream().anyMatch(s -> pattern.matcher(s).find());
     }
 
     public static void addLore(ItemStack itemStack, String json) {
