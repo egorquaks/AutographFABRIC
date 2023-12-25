@@ -1,4 +1,99 @@
-autograph: "<b><gradient:red:yellow>Подпись {player-name}</b>"
-itemContainsMaxAutographsBy: "<color:red>Ты не можешь оставить подпись дважды</color:red>"
-emptyHandMessage: "<color:red>Возьми предмет в руку чтобы его подписать</color:red>"
-nonValuableItem: "<color:red>Ты не можешь оставить подпись на данном типе предмета</color:red>"
+## You can generate formatted messages here: https://webui.advntr.dev/
+
+general:
+  #Autograph form
+  autograph: "<gradient:#ff0000:#ffff00:#ff0000>Autograph by {player-name}"
+  #item is not in the "autographItemList" list:
+  itemNotTheList: "<color:red>It looks like there is no space for an autograph on this item.</color:red>"
+  #item contains the maximum number of autographs:
+  itemContainsMaxAutographs: "<color:red>Someone already signed this item</color:red>"
+  #item contains the maximum number of autographs by user:
+  itemContainsMaxAutographsBy: "<color:red>You can't leave autograph twice</color:red>"
+  #Enabling multiple autographs
+  multipleAutographs: false
+  #emptyHandMessage
+  emptyHandMessage: "<color:red>Take the item you want to autograph in your main hand</color:red>"
+  notEnoughExp: "<color:red>You don't have enough experience to do that</color:red>"
+anvil:
+  enabled: true
+  item: #An item used to leave an autograph through anvil
+    type: NAME_TAG
+    useItemName: true
+    itemName: "Autograph"
+  autographCost: 10
+command:
+  enabled: true
+  disabledMessage: "<color:red>If you see this message, the command is most likely disabled by the server administrator.<color:red>"
+  autographCost: 10
+remove-autograph:
+  grindstone:
+    enabled: true
+  command:
+    enabled: true
+    disabledMessage: "<color:red>If you see this message, the command is most likely disabled by the server administrator.<color:red>"
+#Allowed items to autograph
+allowedItems:
+  - WOODEN_SHOVEL
+  - STONE_SHOVEL
+  - IRON_SHOVEL
+  - DIAMOND_SHOVEL
+  - GOLDEN_SHOVEL
+  - NETHERITE_SHOVEL
+  - WOODEN_PICKAXE
+  - STONE_PICKAXE
+  - IRON_PICKAXE
+  - DIAMOND_PICKAXE
+  - GOLDEN_PICKAXE
+  - NETHERITE_PICKAXE
+  - WOODEN_AXE
+  - STONE_AXE
+  - IRON_AXE
+  - DIAMOND_AXE
+  - GOLDEN_AXE
+  - NETHERITE_AXE
+  - WOODEN_HOE
+  - STONE_HOE
+  - IRON_HOE
+  - DIAMOND_HOE
+  - GOLDEN_HOE
+  - NETHERITE_HOE
+  - WOODEN_SWORD
+  - STONE_SWORD
+  - IRON_SWORD
+  - DIAMOND_SWORD
+  - GOLDEN_SWORD
+  - NETHERITE_SWORD
+  - LEATHER_HELMET
+  - LEATHER_CHESTPLATE
+  - LEATHER_LEGGINGS
+  - LEATHER_BOOTS
+  - CHAINMAIL_HELMET
+  - CHAINMAIL_CHESTPLATE
+  - CHAINMAIL_LEGGINGS
+  - CHAINMAIL_BOOTS
+  - IRON_HELMET
+  - IRON_CHESTPLATE
+  - IRON_LEGGINGS
+  - IRON_BOOTS
+  - DIAMOND_HELMET
+  - DIAMOND_CHESTPLATE
+  - DIAMOND_LEGGINGS
+  - DIAMOND_BOOTS
+  - GOLDEN_HELMET
+  - GOLDEN_CHESTPLATE
+  - GOLDEN_LEGGINGS
+  - GOLDEN_BOOTS
+  - NETHERITE_HELMET
+  - NETHERITE_CHESTPLATE
+  - NETHERITE_LEGGINGS
+  - NETHERITE_BOOTS
+  - TURTLE_HELMET
+  - BOW
+  - FISHING_ROD
+  - CROSSBOW
+  - SPYGLASS
+  - FLINT_AND_STEEL
+  - SHIELD
+  - SHEARS
+  - ELYTRA
+  - TRIDENT
