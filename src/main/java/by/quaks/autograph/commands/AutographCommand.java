@@ -72,13 +72,13 @@ public class AutographCommand {
         }
     }
 
-    private static String genJsonAutograph(PlayerEntity player) {
+    public static String genJsonAutograph(PlayerEntity player) {
         String autographSetting = configReader.getString("autograph");
         Component autographComp = MiniMessage.miniMessage().deserialize(autographSetting.replaceAll("\\{player-name\\}", player.getName().getString()));
         return JSONComponentSerializer.json().serialize(autographComp).replaceFirst("\\{", "{\"italic\":false,");
     }
 
-    private static boolean hasAutographBy(ItemStack itemStack, PlayerEntity player) {
+    public static boolean hasAutographBy(ItemStack itemStack, PlayerEntity player) {
         List<String> lore = getPlainList(getLore(itemStack));
         for (String entry : lore) {
             if (entry.toLowerCase().contains(player.getName().getString().toLowerCase())) {
@@ -88,7 +88,7 @@ public class AutographCommand {
         return false;
     }
 
-    private static void addLore(ItemStack itemStack, String json) {
+    public static void addLore(ItemStack itemStack, String json) {
         NbtCompound itemNbt = itemStack.getOrCreateSubNbt("display");
         NbtList lore = new NbtList();
         if (itemNbt.contains("Lore")) {

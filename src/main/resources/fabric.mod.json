@@ -22,6 +22,9 @@
       "by.quaks.autograph.Autograph"
     ]
   },
+  "mixins": [
+    "autograph.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
